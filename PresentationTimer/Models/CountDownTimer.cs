@@ -9,13 +9,34 @@ using Livet;
 
 namespace PresentationTimer.Models
 {
+    public enum StateType
+    {
+        Neutral,
+        Running,
+        Pause,
+    }
+
     class CountDownTimer : NotificationObject
     {
         TimeSpan _timeRemaining;
+        TimeSpan _timeSetting;
         IDisposable _timer;
+        StateType _state;
 
         public CountDownTimer() {
-            _timeRemaining = new TimeSpan(0, 5, 0);
+            _timeSetting = new TimeSpan(0, 5, 0);
+            Reset();
+        }
+
+        public StateType State {
+            get { return _state; }
+            protected set {
+                if (_state == value) {
+                    return;
+                }
+                _state = value;
+                base.RaisePropertyChanged("State");
+            }
         }
 
         public TimeSpan TimeRemaining {
@@ -33,28 +54,42 @@ namespace PresentationTimer.Models
         }
 
         public void Start() {
+            if (State == StateType.Running) {
+                return;
+            }
             _timer = Observable
                 .Timer(TimeSpan.FromMilliseconds(100))
                 .Repeat()
                 .TimeInterval()
-                .Subscribe(time => {
-                    TimeRemaining -= time.Interval;
-                    if (_timeRemaining == TimeSpan.Zero) {
-                        Stop();
-                    }
-                },
-                ex => {
-                    Stop();
-                },
-                () => { });
+                .Subscribe(
+                    time => {
+                        TimeRemaining -= time.Interval;
+                        if (TimeRemaining == TimeSpan.Zero) {
+                            Pause();
+                        }
+                    },
+                    ex => {
+                        Pause();
+                    },
+                    () => {
+                        Pause();
+                    });
+            State = StateType.Running;
         }
-
-        public void Stop() {
+    
+        public void Pause() {
             if (_timer == null) {
                 return;
             }
             _timer.Dispose();
             _timer = null;
+            State = StateType.Pause;
+        }
+
+        public void Reset() {
+            Pause();
+            TimeRemaining = _timeSetting.Duration();
+            State = StateType.Neutral;
         }
     }
 }

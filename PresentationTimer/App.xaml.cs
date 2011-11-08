@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
+using Livet;
+
 using PresentationTimer.ViewModels;
 
 namespace PresentationTimer
@@ -17,13 +19,8 @@ namespace PresentationTimer
         static App() {
         }
 
-        protected override void OnStartup(StartupEventArgs e) {
-            base.OnStartup(e);
-
-            MainWindow window = new MainWindow();
-            var viewModel = new MainWindowViewModel();
-            window.DataContext = viewModel;
-            window.Show();
+        private void AppStartup(object sender, StartupEventArgs e) {
+            DispatcherHelper.UIDispatcher = Dispatcher;
         }
     }
 }

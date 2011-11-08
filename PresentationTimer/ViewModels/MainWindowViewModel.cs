@@ -15,8 +15,8 @@ namespace PresentationTimer.ViewModels
 {
     class MainWindowViewModel : ViewModel
     {
-        private ICommand _startCommand;
-        private ICommand _stopCommand;
+        private ViewModelCommand _startCommand;
+        private ViewModelCommand _pauseCommand;
         private CountDownTimer _model;
 
         public MainWindowViewModel() {
@@ -24,7 +24,9 @@ namespace PresentationTimer.ViewModels
             ViewModelHelper.BindNotifyChanged(
                 _model, this,
                 (sender, e) => {
-                    RaisePropertyChanged(e.PropertyName);
+                    if (e.PropertyName == "TimeRemaining") {
+                        RaisePropertyChanged(e.PropertyName);
+                    }
                 });
         }
 
@@ -34,21 +36,41 @@ namespace PresentationTimer.ViewModels
             }
         }
 
-        public ICommand StartCommand {
+        public ViewModelCommand StartCommand {
             get {
                 if (_startCommand == null) {
-                    _startCommand = new ViewModelCommand(StartTimer);
+                    _startCommand = new ViewModelCommand(
+                        StartTimer,
+                        () => _model.State != StateType.Running
+                        );
+                    ViewModelHelper.BindNotifyChanged(
+                        _model, this,
+                        (sender, e) => {
+                        if (e.PropertyName == "State") {
+                            _startCommand.RaiseCanExecuteChanged();
+                        }
+                    });
                 }
                 return _startCommand;
             }
         }
 
-        public ICommand StopCommand {
+        public ViewModelCommand PauseCommand {
             get {
-                if (_stopCommand == null) {
-                    _stopCommand = new ViewModelCommand(StopTimer);
+                if (_pauseCommand == null) {
+                    _pauseCommand = new ViewModelCommand(
+                        PauseTimer,
+                        () => _model.State == StateType.Running
+                        );
+                    ViewModelHelper.BindNotifyChanged(
+                        _model, this,
+                        (sender, e) => {
+                        if (e.PropertyName == "State") {
+                            _pauseCommand.RaiseCanExecuteChanged();
+                        }
+                    });
                 }
-                return _stopCommand;
+                return _pauseCommand;
             }
         }
 
@@ -56,8 +78,8 @@ namespace PresentationTimer.ViewModels
             _model.Start();
         }
 
-        private void StopTimer() {
-            _model.Stop();
+        private void PauseTimer() {
+            _model.Pause();
         }
     }
 }
