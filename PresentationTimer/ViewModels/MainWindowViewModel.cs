@@ -28,9 +28,9 @@ namespace PresentationTimer.ViewModels
                 });
         }
 
-        public virtual string TimeRemaining {
+        public virtual TimeSpan TimeRemaining {
             get {
-                return _model.TimeRemaining.ToString("hh\\:mm\\:ss");
+                return _model.TimeRemaining;
             }
         }
 

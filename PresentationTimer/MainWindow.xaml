@@ -1,10 +1,14 @@
 ﻿<Window x:Class="PresentationTimer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:pt="clr-namespace:PresentationTimer"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
+    <Window.Resources>
+        <pt:SimpleTimeSpanConverter x:Key="TimeSpanConverter" />
+    </Window.Resources>
+    <Grid Background="Black">
         <Viewbox Margin="12" Name="viewbox1" Stretch="Uniform">
-            <TextBlock Text="{Binding Path=TimeRemaining}" Name="curerntTime" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Path=TimeRemaining, Converter={StaticResource TimeSpanConverter}}" Name="curerntTime" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
         </Viewbox>
         <Grid VerticalAlignment="Bottom">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
