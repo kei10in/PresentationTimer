@@ -14,6 +14,7 @@ namespace PresentationTimer.Models
         Neutral,
         Running,
         Pause,
+        Stopped,
     }
 
     class CountDownTimer : NotificationObject
@@ -72,24 +73,33 @@ namespace PresentationTimer.Models
                         Pause();
                     },
                     () => {
-                        Pause();
+                        Stop();
                     });
             State = StateType.Running;
         }
-    
+
+        public void Stop() {
+            StopTimer();
+            State = StateType.Stopped;
+        }
+
         public void Pause() {
+            StopTimer();
+            State = StateType.Pause;
+        }
+
+        public void Reset() {
+            StopTimer();
+            TimeRemaining = _timeSetting.Duration();
+            State = StateType.Neutral;
+        }
+
+        private void StopTimer() {
             if (_timer == null) {
                 return;
             }
             _timer.Dispose();
             _timer = null;
-            State = StateType.Pause;
-        }
-
-        public void Reset() {
-            Pause();
-            TimeRemaining = _timeSetting.Duration();
-            State = StateType.Neutral;
         }
     }
 }

@@ -15,8 +15,8 @@ namespace PresentationTimer.ViewModels
 {
     class MainWindowViewModel : ViewModel
     {
-        private ViewModelCommand _startCommand;
-        private ViewModelCommand _pauseCommand;
+        private ViewModelCommand _startStopCommand;
+        private ViewModelCommand _resetCommand;
         private CountDownTimer _model;
 
         public MainWindowViewModel() {
@@ -28,6 +28,7 @@ namespace PresentationTimer.ViewModels
                         RaisePropertyChanged(e.PropertyName);
                     }
                 });
+            ResetTimer();
         }
 
         public virtual TimeSpan TimeRemaining {
@@ -36,50 +37,56 @@ namespace PresentationTimer.ViewModels
             }
         }
 
-        public ViewModelCommand StartCommand {
+        private string _startStop;
+        public string StartStop {
+            get { return _startStop; }
+            protected set {
+                _startStop = value;
+                RaisePropertyChanged("StartStop");
+            }
+        }
+
+        public ViewModelCommand StartStopCommand {
             get {
-                if (_startCommand == null) {
-                    _startCommand = new ViewModelCommand(
-                        StartTimer,
-                        () => _model.State != StateType.Running
+                if (_startStopCommand == null) {
+                    _startStopCommand = new ViewModelCommand(Operate);
+                }
+                return _startStopCommand;
+            }
+        }
+
+        public ViewModelCommand ResetCommand {
+            get {
+                if (_resetCommand == null) {
+                    _resetCommand = new ViewModelCommand(
+                        ResetTimer,
+                        () => _model.State == StateType.Pause
                         );
                     ViewModelHelper.BindNotifyChanged(
                         _model, this,
                         (sender, e) => {
                         if (e.PropertyName == "State") {
-                            _startCommand.RaiseCanExecuteChanged();
+                            _resetCommand.RaiseCanExecuteChanged();
                         }
                     });
                 }
-                return _startCommand;
+                return _resetCommand;
             }
         }
 
-        public ViewModelCommand PauseCommand {
-            get {
-                if (_pauseCommand == null) {
-                    _pauseCommand = new ViewModelCommand(
-                        PauseTimer,
-                        () => _model.State == StateType.Running
-                        );
-                    ViewModelHelper.BindNotifyChanged(
-                        _model, this,
-                        (sender, e) => {
-                        if (e.PropertyName == "State") {
-                            _pauseCommand.RaiseCanExecuteChanged();
-                        }
-                    });
-                }
-                return _pauseCommand;
+        private void Operate() {
+            if (_model.State == StateType.Running) {
+                _model.Pause();
+                StartStop = "Start";
+            } else {
+                _model.Start();
+                StartStop = "Stop";
             }
         }
 
-        private void StartTimer() {
-            _model.Start();
-        }
-
-        private void PauseTimer() {
-            _model.Pause();
+        private void ResetTimer() {
+            _model.Reset();
+            StartStop = "Start";
         }
     }
 }
