@@ -19,68 +19,49 @@ namespace PresentationTimer.Models
 
     class CountDownTimer : NotificationObject
     {
-        TimeSpan _timeRemaining;
-        TimeSpan _timeSetting;
-        IDisposable _timer;
-        StateType _state;
+        TimeSpan _TimeSetting;
+        IDisposable _Timer;
+        int _TimerResolusion = 100;
 
         public CountDownTimer() {
-            _timeSetting = new TimeSpan(0, 5, 0);
+            _TimeSetting = new TimeSpan(0, 5, 0);
             Reset();
         }
 
+        StateType _State;
         public StateType State {
-            get { return _state; }
+            get { return _State; }
             protected set {
-                if (_state == value) {
+                if (_State == value) {
                     return;
                 }
-                _state = value;
+                _State = value;
                 base.RaisePropertyChanged("State");
             }
         }
 
+        TimeSpan _TimeRemaining;
         public TimeSpan TimeRemaining {
-            get { return _timeRemaining; }
+            get { return _TimeRemaining; }
             protected set {
-                if (_timeRemaining == value) {
+                if (_TimeRemaining == value) {
                     return;
                 }
-                _timeRemaining = value;
-                if (_timeRemaining < TimeSpan.Zero) {
-                    _timeRemaining = TimeSpan.Zero;
+                _TimeRemaining = value;
+                if (_TimeRemaining < TimeSpan.Zero) {
+                    _TimeRemaining = TimeSpan.Zero;
                 }
                 base.RaisePropertyChanged("TimeRemaining");
             }
         }
 
         public void Start() {
-            if (State == StateType.Running) {
-                return;
-            }
-            _timer = Observable
-                .Timer(TimeSpan.FromMilliseconds(100))
-                .Repeat()
-                .TimeInterval()
-                .Subscribe(
-                    time => {
-                        TimeRemaining -= time.Interval;
-                        if (TimeRemaining == TimeSpan.Zero) {
-                            Pause();
-                        }
-                    },
-                    ex => {
-                        Pause();
-                    },
-                    () => {
-                        Stop();
-                    });
+            StartTimer();
             State = StateType.Running;
         }
 
         public void Stop() {
-            StopTimer();
-            State = StateType.Stopped;
+            Reset();
         }
 
         public void Pause() {
@@ -90,16 +71,32 @@ namespace PresentationTimer.Models
 
         public void Reset() {
             StopTimer();
-            TimeRemaining = _timeSetting.Duration();
+            TimeRemaining = _TimeSetting.Duration();
             State = StateType.Neutral;
         }
 
+        private void StartTimer() {
+            if (_Timer != null) { return; }
+            _Timer = Observable
+                .Timer(TimeSpan.FromMilliseconds(_TimerResolusion))
+                .Repeat()
+                .TimeInterval()
+                .Subscribe(
+                time => {
+                    TimeRemaining -= time.Interval;
+                    if (TimeRemaining <= TimeSpan.Zero) {
+                        Stop();
+                    }
+                },
+                ex => { Pause(); },
+                () => { }
+                );
+        }
+
         private void StopTimer() {
-            if (_timer == null) {
-                return;
-            }
-            _timer.Dispose();
-            _timer = null;
+            if (_Timer == null) { return; }
+            _Timer.Dispose();
+            _Timer = null;
         }
     }
 }

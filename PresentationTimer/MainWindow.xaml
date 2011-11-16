@@ -12,12 +12,42 @@
     </Window.Resources>
     <Grid Background="Black">
         <Viewbox Margin="12" Name="viewbox1" Stretch="Uniform">
-            <TextBlock Text="{Binding Path=TimeRemaining, Converter={StaticResource TimeSpanConverter}}" Name="curerntTime" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
+            <TextBlock
+                Text="{Binding Path=TimeRemaining, Converter={StaticResource TimeSpanConverter}}"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Foreground="White" />
         </Viewbox>
         <Grid VerticalAlignment="Bottom">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Content="{Binding Path=StartStop}" Height="23" Width="75" Command="{Binding Path=StartStopCommand}" Margin="6,12,0,12" />
-                <Button Content="Reset" Height="23" Width="75" Command="{Binding Path=ResetCommand}" Margin="6,12,12,12" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding StartButtonVisibility}">
+                <Button
+                    Command="{Binding Path=StartCommand}"
+                    Content="Start"
+                    Height="23" Width="156"
+                    Margin="12,12,12,12" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding PauseCancelButtonVisibility}">
+                <Button
+                    Content="Pause"
+                    Command="{Binding Path=PauseCommand}"
+                    Height="23" Width="75"
+                    Margin="12,12,0,12" />
+                <Button
+                    Content="Cancel"
+                    Command="{Binding Path=CancelCommand}"
+                    Height="23" Width="75"
+                    Margin="6,12,12,12" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding ResumeCancelButtonVisibility}">
+                <Button
+                    Content="Resume"
+                    Command="{Binding Path=ResumeCommand}"
+                    Height="23" Width="75"
+                    Margin="12,12,0,12" />
+                <Button
+                    Content="Cancel"
+                    Command="{Binding Path=CancelCommand}"
+                    Height="23" Width="75"
+                    Margin="6,12,12,12" />
             </StackPanel>
         </Grid>
     </Grid>
