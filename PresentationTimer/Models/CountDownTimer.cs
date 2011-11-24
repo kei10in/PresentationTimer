@@ -19,12 +19,11 @@ namespace PresentationTimer.Models
 
     class CountDownTimer : NotificationObject
     {
-        TimeSpan _TimeSetting;
         IDisposable _Timer;
         int _TimerResolusion = 100;
 
         public CountDownTimer() {
-            _TimeSetting = new TimeSpan(0, 5, 0);
+            TimeSetting = new TimeSpan(0, 5, 0);
             Reset();
         }
 
@@ -55,6 +54,23 @@ namespace PresentationTimer.Models
             }
         }
 
+        TimeSpan _TimeSetting;
+        public TimeSpan TimeSetting {
+            get { return _TimeSetting; }
+            set {
+                if (_TimeSetting == value) {
+                    return;
+                }
+                _TimeSetting = value.Duration();
+                base.RaisePropertyChanged("TimeSetting");
+
+                // この位置は妥当でないかも。
+                if (State == StateType.Neutral) {
+                    TimeRemaining = _TimeSetting;
+                }
+            }
+        }
+
         public void Start() {
             StartTimer();
             State = StateType.Running;
@@ -71,7 +87,7 @@ namespace PresentationTimer.Models
 
         public void Reset() {
             StopTimer();
-            TimeRemaining = _TimeSetting.Duration();
+            TimeRemaining = TimeSetting.Duration();
             State = StateType.Neutral;
         }
 

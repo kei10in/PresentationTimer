@@ -10,6 +10,16 @@
     <Window.Resources>
         <pt:SimpleTimeSpanConverter x:Key="TimeSpanConverter" />
     </Window.Resources>
+    <Window.ContextMenu>
+        <ContextMenu ItemsSource="{Binding Path=PresetTimerCommands}">
+            <ContextMenu.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Path=DisplayName}"/>
+                    <Setter Property="Command" Value="{Binding Path=Command}"/>
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
+    </Window.ContextMenu>
     <Grid Background="Black">
         <Viewbox Margin="12" Name="viewbox1" Stretch="Uniform">
             <TextBlock

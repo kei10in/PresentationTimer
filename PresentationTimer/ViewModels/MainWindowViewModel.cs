@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -174,5 +175,46 @@ namespace PresentationTimer.ViewModels
                     break;
             }
         }
+
+
+        #region Property for Preseted Timer Settings Commands
+        public IEnumerable<CommandViewModel> PresetTimerCommands {
+            get {
+                return from t in TimerPresets
+                       select new CommandViewModel(
+                           t.ToString(@"mm\:ss"),
+                           CreateTimeSetterCommand(t));
+            }
+        }
+        #endregion
+
+        #region Private members for preseted time settings.
+        List<TimeSpan> _TimerPresets;
+        private List<TimeSpan> TimerPresets {
+            get {
+                if (_TimerPresets == null) {
+                    _TimerPresets = new List<TimeSpan> {
+                        new TimeSpan(0, 5, 0),
+                        new TimeSpan(0, 10, 0),
+                        new TimeSpan(0, 15, 0),
+                        new TimeSpan(0, 20, 0),
+                        new TimeSpan(0, 25, 0),
+                        new TimeSpan(0, 30, 0),
+                    };
+                }
+                return _TimerPresets;
+            }
+        }
+
+        /// <summary>
+        /// Create ViewModelCommand object for setup the timer.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private ICommand CreateTimeSetterCommand(TimeSpan time) {
+            return new ViewModelCommand(() => { _model.TimeSetting = time; });
+        }
+        #endregion
+
     }
 }
