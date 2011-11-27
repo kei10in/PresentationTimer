@@ -8,6 +8,12 @@
 
 最大化して画面全体に表示することができます。
 
+ビルド方法
+==========
+
+Visual Studio 2010 Express Edition でビルドが可能です。
+
+ビルドには Livet と Reactive Extensions が必要です。
 
 The MIT License (MIT)
 =====================
