@@ -77,7 +77,8 @@ namespace PresentationTimer.Models
         }
 
         public void Stop() {
-            Reset();
+            StopTimer();
+            State = StateType.Stopped;
         }
 
         public void Pause() {

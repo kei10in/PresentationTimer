@@ -32,6 +32,9 @@ namespace PresentationTimer.ViewModels
                 (sender, e) => {
                     if (e.PropertyName == "State") {
                         OnTimerStateChanged();
+
+                        // TODO: PauseCommand の生成のときに設定できるようにする。
+                        PauseCommand.RaiseCanExecuteChanged();
                     }
                 });
             OnTimerStateChanged();
@@ -69,7 +72,7 @@ namespace PresentationTimer.ViewModels
         public ViewModelCommand PauseCommand {
             get {
                 if (_PauseCommand == null) {
-                    _PauseCommand = new ViewModelCommand(Pause);
+                    _PauseCommand = new ViewModelCommand(Pause, CanPause);
                 }
                 return _PauseCommand;
             }
@@ -77,6 +80,15 @@ namespace PresentationTimer.ViewModels
 
         public void Pause() {
             _model.Pause();
+        }
+
+        public bool CanPause() {
+            switch (_model.State) {
+                case StateType.Running:
+                    return true;
+                default:
+                    return false;
+            }
         }
         #endregion
 
