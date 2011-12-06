@@ -31,13 +31,11 @@ namespace PresentationTimer.ViewModels
                 _model, this,
                 (sender, e) => {
                     if (e.PropertyName == "State") {
-                        OnTimerStateChanged();
-
                         // TODO: PauseCommand の生成のときに設定できるようにする。
                         PauseCommand.RaiseCanExecuteChanged();
+                        RaisePropertyChanged("TimerState");
                     }
                 });
-            OnTimerStateChanged();
         }
 
         public virtual TimeSpan TimeRemaining {
@@ -129,65 +127,11 @@ namespace PresentationTimer.ViewModels
         }
         #endregion
 
-        #region Property for Start Button Visibility
-        private Visibility _StartButtonVisibility;
-
-        public Visibility StartButtonVisibility {
-            get { return _StartButtonVisibility; }
-            set {
-                if (_StartButtonVisibility.Equals(value)) { return; }
-                _StartButtonVisibility = value;
-                RaisePropertyChanged("StartButtonVisibility");
-            }
+        #region Property for Timer State
+        public StateType TimerState {
+            get { return _model.State; }
         }
         #endregion
-
-        #region Property for Pause and Cancel Button Visibility
-        private Visibility _PauseCancelButtonVisibility;
-
-        public Visibility PauseCancelButtonVisibility {
-            get { return _PauseCancelButtonVisibility; }
-            set {
-                if (_PauseCancelButtonVisibility.Equals(value)) { return; }
-                _PauseCancelButtonVisibility = value;
-                RaisePropertyChanged("PauseCancelButtonVisibility");
-            }
-        }
-        #endregion
-
-        #region Property for Resume and Cancel Button Visibility
-        private Visibility _ResumeCancelButtonVisibility;
-
-        public Visibility ResumeCancelButtonVisibility {
-            get { return _ResumeCancelButtonVisibility; }
-            set {
-                if (_ResumeCancelButtonVisibility.Equals(value)) { return; }
-                _ResumeCancelButtonVisibility = value;
-                RaisePropertyChanged("ResumeCancelButtonVisibility");
-            }
-        }
-        #endregion
-
-        private void OnTimerStateChanged() {
-            switch (_model.State) {
-                case StateType.Neutral:
-                    StartButtonVisibility = Visibility.Visible;
-                    PauseCancelButtonVisibility = Visibility.Hidden;
-                    ResumeCancelButtonVisibility = Visibility.Hidden;
-                    break;
-                case StateType.Running:
-                    StartButtonVisibility = Visibility.Hidden;
-                    PauseCancelButtonVisibility = Visibility.Visible;
-                    ResumeCancelButtonVisibility = Visibility.Hidden;
-                    break;
-                case StateType.Pause:
-                    StartButtonVisibility = Visibility.Hidden;
-                    PauseCancelButtonVisibility = Visibility.Hidden;
-                    ResumeCancelButtonVisibility = Visibility.Visible;
-                    break;
-            }
-        }
-
 
         #region Property for Preseted Timer Settings Commands
         public IEnumerable<CommandViewModel> PresetTimerCommands {

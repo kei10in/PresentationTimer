@@ -1,6 +1,8 @@
 ﻿<Window x:Class="PresentationTimer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:pt="clr-namespace:PresentationTimer"
         xmlns:vm="clr-namespace:PresentationTimer.ViewModels"
         Title="MainWindow" Height="350" Width="525">
@@ -9,7 +11,45 @@
     </Window.DataContext>
     <Window.Resources>
         <pt:SimpleTimeSpanConverter x:Key="TimeSpanConverter" />
+
+        <DataTemplate x:Key="Neutral">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Command="{Binding StartCommand}"
+                    Content="Start"
+                    Height="23" Width="156" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="Running">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Content="Pause"
+                    Command="{Binding Path=PauseCommand}"
+                    Height="23" Width="75" />
+                <Button
+                    Content="Cancel"
+                    Command="{Binding Path=CancelCommand}"
+                    Height="23" Width="75"
+                    Margin="6,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="Pause">
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    Content="Resume"
+                    Command="{Binding Path=ResumeCommand}"
+                    Height="23" Width="75" />
+                <Button
+                    Content="Cancel"
+                    Command="{Binding Path=CancelCommand}"
+                    Height="23" Width="75"
+                    Margin="6,0,0,0" />
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
+
     <Window.ContextMenu>
         <ContextMenu ItemsSource="{Binding Path=PresetTimerCommands}">
             <ContextMenu.ItemContainerStyle>
@@ -20,45 +60,42 @@
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>
     </Window.ContextMenu>
+
+    <i:Interaction.Triggers>
+        <ei:DataTrigger Binding="{Binding TimerState}" Value="Neutral">
+            <ei:ChangePropertyAction
+                TargetName="buttons"
+                PropertyName="ContentTemplate"
+                Value="{StaticResource Neutral}" />
+        </ei:DataTrigger>
+        <ei:DataTrigger Binding="{Binding TimerState}" Value="Running">
+            <ei:ChangePropertyAction
+                TargetName="buttons"
+                PropertyName="ContentTemplate"
+                Value="{StaticResource Running}" />
+        </ei:DataTrigger>
+        <ei:DataTrigger Binding="{Binding TimerState}" Value="Pause">
+            <ei:ChangePropertyAction
+                TargetName="buttons"
+                PropertyName="ContentTemplate"
+                Value="{StaticResource Pause}" />
+        </ei:DataTrigger>
+    </i:Interaction.Triggers>
+
     <Grid Background="Black">
         <Viewbox Margin="12" Name="viewbox1" Stretch="Uniform">
-            <TextBlock
+            <TextBlock x:Name="time"
                 Text="{Binding Path=TimeRemaining, Converter={StaticResource TimeSpanConverter}}"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 Foreground="White" />
         </Viewbox>
         <Grid VerticalAlignment="Bottom">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding StartButtonVisibility}">
-                <Button
-                    Command="{Binding Path=StartCommand}"
-                    Content="Start"
-                    Height="23" Width="156"
-                    Margin="12,12,12,12" />
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding PauseCancelButtonVisibility}">
-                <Button
-                    Content="Pause"
-                    Command="{Binding Path=PauseCommand}"
-                    Height="23" Width="75"
-                    Margin="12,12,0,12" />
-                <Button
-                    Content="Cancel"
-                    Command="{Binding Path=CancelCommand}"
-                    Height="23" Width="75"
-                    Margin="6,12,12,12" />
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding ResumeCancelButtonVisibility}">
-                <Button
-                    Content="Resume"
-                    Command="{Binding Path=ResumeCommand}"
-                    Height="23" Width="75"
-                    Margin="12,12,0,12" />
-                <Button
-                    Content="Cancel"
-                    Command="{Binding Path=CancelCommand}"
-                    Height="23" Width="75"
-                    Margin="6,12,12,12" />
-            </StackPanel>
+            <ContentControl
+                x:Name="buttons"
+                HorizontalAlignment="Right"
+                Margin="12"
+                Content="{Binding}"
+                ContentTemplate="{StaticResource Neutral}" />
         </Grid>
     </Grid>
 </Window>
