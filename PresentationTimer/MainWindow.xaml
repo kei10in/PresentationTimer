@@ -67,19 +67,41 @@
                 TargetName="buttons"
                 PropertyName="ContentTemplate"
                 Value="{StaticResource Neutral}" />
+            <ei:ChangePropertyAction
+                TargetName="DefaultAction"
+                PropertyName="Command"
+                Value="{Binding StartCommand}" />
         </ei:DataTrigger>
         <ei:DataTrigger Binding="{Binding TimerState}" Value="Running">
             <ei:ChangePropertyAction
                 TargetName="buttons"
                 PropertyName="ContentTemplate"
                 Value="{StaticResource Running}" />
+            <ei:ChangePropertyAction
+                TargetName="DefaultAction"
+                PropertyName="Command"
+                Value="{Binding PauseCommand}" />
         </ei:DataTrigger>
         <ei:DataTrigger Binding="{Binding TimerState}" Value="Pause">
             <ei:ChangePropertyAction
                 TargetName="buttons"
                 PropertyName="ContentTemplate"
                 Value="{StaticResource Pause}" />
+            <ei:ChangePropertyAction
+                TargetName="DefaultAction"
+                PropertyName="Command"
+                Value="{Binding ResumeCommand}" />
         </ei:DataTrigger>
+        <ei:DataTrigger Binding="{Binding TimerState}" Value="Stopped">
+            <ei:ChangePropertyAction
+                TargetName="DefaultAction"
+                PropertyName="Command"
+                Value="{Binding CancelCommand}" />
+        </ei:DataTrigger>
+
+        <i:EventTrigger EventName="MouseDoubleClick">
+            <i:InvokeCommandAction x:Name="DefaultAction" Command="{Binding StartCommand}"/>
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <Grid Background="Black">
